@@ -1,0 +1,112 @@
+table {
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+}
+
+th,
+td {
+    font-variant-numeric: tabular-nums;
+    font-family: Consolas, "Courier New", monospace;
+    border: 1px solid #ccc;
+    padding: 3px 8px;
+    text-align: right;
+    white-space: nowrap;
+    
+}
+
+thead th {
+    font-family: Arial, sans-serif;
+    color: white;
+    position: sticky;
+    top: 0;
+    background: #4f4f4f;
+    z-index: 1;
+    font-weight: bold;
+    text-align: center;
+}
+
+td:first-child,
+td:nth-child(2),
+td:nth-child(3) {
+    text-align: left;
+}
+
+
+tr:nth-child(even) {
+    background-color: #e9e9e9;
+}
+tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+tr:hover {
+    background-color: #eef6ff;
+}
+
+.no-transaction {
+    color: gray;
+    font-style: italic;
+    font-size: 12px;
+}
+
+
+
+.concept-cell {
+    position: relative;
+    text-align: left;
+}
+
+.concept-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.concept-label {
+    user-select: none;
+}
+
+.concept-label::after {
+    content: " ˅";
+    display: inline-block;
+    transition: transform 0.2s;
+}
+
+.concept-menu:hover .concept-label::after {
+    transform: rotate(180deg);
+}
+
+.concept-dropdown {
+    display: none;
+    position: absolute;
+
+    top: 100%;
+    left: 0;
+
+    min-width: 180px;
+
+    background: white;
+    border: 1px solid #ccc;
+    padding: 6px;
+
+    z-index: 10;
+}
+
+.concept-dropdown div {
+    padding: 4px 8px;
+    white-space: nowrap;
+}
+
+.concept-menu:hover .concept-dropdown {
+    display: block;
+}
+
+#col-concept{
+    width: 150px;
+}
+#col-account{
+    width: 100px;
+}
+#col-net{
+    width: 125px;
+}
