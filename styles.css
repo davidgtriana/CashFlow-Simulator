@@ -15,6 +15,16 @@ td {
     
 }
 
+tr.section-row td {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 700;
+
+    background-color: #b8b8b8;
+
+    letter-spacing: 1px;
+}
+
 thead th {
     font-family: Arial, sans-serif;
     color: white;
@@ -101,12 +111,12 @@ tr:hover {
     display: block;
 }
 
-#col-concept{
+.col-concept{
     width: 150px;
 }
-#col-account{
+.col-account{
     width: 100px;
 }
-#col-net{
+.col-net{
     width: 125px;
 }

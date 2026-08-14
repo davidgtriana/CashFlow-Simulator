@@ -3,7 +3,7 @@ let currency = "CAD";
 
 class UserInterface {
     constructor(){}
-    renderTimeLineTable(user: User){
+    renderTimeLineTable(user: User, future: TimeLineEntry[]){
         const container = document.getElementById("timeline-table")!;
         container.innerHTML = `
             <table>
@@ -13,70 +13,61 @@ class UserInterface {
         `;
         this.renderTableHeader(user.accounts);
         this.renderHistory(user);
-        //this.renderProjection();
+        this.renderProjection(user, future);
     }
 
     renderTableHeader(accounts: Map<number,Account>){
         const headerHTML = document.getElementById("table-header")!;
         headerHTML.innerHTML = `
         <tr>
-            <th id="col-date">Date</th>
-            <th id="col-concept">Concept</th>
+            <th class="col-date">Date</th>
+            <th class="col-concept">Concept</th>
             ${Array.from(accounts.values())
-                .map(account => `<th id="col-account">${account.name}</th>`)
+                .map(account => `<th class="col-account">${account.name}</th>`)
                 .join("")}
-            <th id="col-net">Net Worth</th>
+            <th class="col-net">Net Worth</th>
         </tr>`;
     }
     renderHistory(user: User){
         const tableBody = document.getElementById("table-body")!;
+        this.renderSection("Actual History", user);
+        let html = ``;
+        for (const entry of user.history)
+            html += this.renderTimeLineEntry(entry, user);
+        tableBody.innerHTML += html;
+    }
+
+    renderProjection(user: User, future: TimeLineEntry[]){
+        const tableBody = document.getElementById("table-body")!;
+        this.renderSection("Projection", user);
+        let html = ``;
+        for (const entry of future)
+            html += this.renderTimeLineEntry(entry, user);
+        tableBody.innerHTML += html;
+    }
+
+    renderSection(title: string, user: User){
+        const tableBody = document.getElementById("table-body")!;
         let html = `
         <tr class="section-row">
-            <td colspan="${user.accounts.size + 3}">Actual History</td>
+            <td colspan="${user.accounts.size + 3}">${title}</td>
         </tr>`;
-        for (const entry of user.history) {
-            html += `
-                <tr>
-                    <td>${entry.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
-                    <td>${this.printConcepts(entry.concepts)}</td>
-
-                    ${Array.from(user.accounts.values())
-                        .map(account =>
-                            `<td>${this.formatCurrency(
-                                entry.balances.get(account.id) ?? 0
-                            )}</td>`
-                        )
-                        .join("")}
-
-                    <td>${this.formatCurrency(entry.netWorth)}</td>
-                </tr>
-            `;
-        }
-    tableBody.innerHTML += html;
+        tableBody.innerHTML += html;
     }
-/*
-    renderProjection(projection : Projection){
-        const container = document.getElementById("projection-table")!;
-        if (projection.days.length === 0){
-            container.innerHTML = "No projected days yet.";
-            return;
-        }
-        
-        const rowsHTML = projection.days.map(day => {
+
+
+    renderTimeLineEntry(entry: TimeLineEntry, user: User): string {
         return `
             <tr>
-                <td>${day.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
-                <td class="concept-cell">${this.printConcepts(day.concepts)}</td>
-                ${Array.from(projection.user.accounts.values())
-                    .map(account =>`<td> ${this.formatCurrency(day.balances.get(account.id) ?? 0)} </td>`)
-                    .join("")}
-                <td>${this.formatCurrency(day.netWorth)}</td>
+                <td>${entry.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
+                <td>${this.printConcepts(entry.concepts)}</td>
+                ${Array.from(user.accounts.values())
+                    .map(account =>`<td>${this.formatCurrency(entry.balances.get(account.id) ?? 0)}</td>`).join("")}
+                <td>${this.formatCurrency(entry.netWorth)}</td>
             </tr>
         `;
-        }).join("");
+    }
 
-  
-    }*/
     formatCurrency(value: number): string {
         return value.toLocaleString("en-CA", {style: "currency", currency: "CAD"});
     }
@@ -180,7 +171,7 @@ class User{
         const data = await response.json();
         for(const accountData of data.accounts){
             let account = new Account(accountData.name);
-            account.interestRate = accountData.interestRate;
+            account.interestRate = accountData.interestRate ?? 0;
             this.addAccount(account);
         }
     }
@@ -188,9 +179,7 @@ class User{
         const response = await fetch("history.json");
         const data = await response.json();
         for(const entryData of data.history){
-            const [year, month, day] = entryData.date.split("-").map(Number);
-            let newDate = new Date(year, month - 1, day);
-            newDate.setHours(0, 0, 0, 0);
+            let newDate = this.parseDate(entryData.date);
             let newConcepts = entryData.concepts;
             let newBalances = new Map<number, number>();
             for (const accountName in entryData.balances) {
@@ -200,6 +189,52 @@ class User{
             this.history.push(new TimeLineEntry(newDate, newConcepts, newBalances));
         }
         this.history.sort((a, b) => {return a.date.getTime() - b.date.getTime();});
+    }
+    async loadTransactions(){
+        try { const response = await fetch("transactions.json");
+            if (!response.ok) throw new Error(`transactions.json not found (${response.status})`);
+            const data = await response.json();
+            
+            
+            for (const oneTimeData of data.oneTimeTransactions){
+                let oneTimeTransaction = new OneTimeTransaction(oneTimeData.concept);
+                oneTimeTransaction.amount = oneTimeData.amount ?? 0;
+                oneTimeTransaction.from = oneTimeData.from;
+                oneTimeTransaction.to = oneTimeData.to;
+                oneTimeTransaction.effectiveDate = this.parseDate(oneTimeData.effectiveDate);
+                oneTimeTransaction.active = oneTimeData.active ?? true;
+                this.addOneTimeTransaction(oneTimeTransaction);
+            }
+            
+            
+            for (const recurringData of data.recurringTransactions){
+                let recurring = new RecurringTransaction(recurringData.concept);
+                recurring.amount = recurringData.amount ?? 0;
+                recurring.frequency = this.parseFrequency(recurringData.frequency);
+                recurring.from = recurringData.from;
+                recurring.to = recurringData.to;
+                recurring.startDate = this.parseDate(recurringData.startDate);
+                if(recurringData.endDate) recurring.endDate = this.parseDate(recurringData.endDate);
+                recurring.active = recurringData.active ?? true;
+                this.addRecurringTransaction(recurring);
+            }
+        } catch (error) {console.error(error);}
+    }
+    parseDate(dateString: string): Date {
+        const [year, month, day] = dateString.split("-").map(Number);
+        const date = new Date(year, month - 1, day);
+        date.setHours(0, 0, 0, 0);
+        return date;
+    }
+    parseFrequency(frequency: string): Frequency {
+        switch (frequency) {
+            case "Daily": return Frequency.Daily;
+            case "Weekly": return Frequency.Weekly;
+            case "Biweekly": return Frequency.Biweekly;
+            case "Monthly": return Frequency.Monthly;
+            case "Yearly": return Frequency.Yearly;
+            default: throw new Error(`Unknown frequency: ${frequency}`);
+        }
     }
 }
 
@@ -225,7 +260,9 @@ class Projection{
         this.user = user;
     }
 
-    create(daysToProject: number){                                                                                                                                                                                                                                                                                                                                                                                                                                       
+    create(daysToProject: number){    
+        if (this.user.history.length === 0) 
+            throw new Error("Cannot create projection without historical data.");                                                                                                                                                                                                                                                                                                                                                                                                                                   
         this.future.push(this.user.history[this.user.history.length - 1]);
         for(let i = 0; i < daysToProject; i++){
             // Get the last day in the projection
@@ -264,6 +301,7 @@ class Projection{
             // Save the new day in the projection
             this.future.push(new TimeLineEntry(newDate, newConcept, newBalances));
         }
+        this.future.shift();
     }
 
 
@@ -285,8 +323,6 @@ class Projection{
 
     shouldApplyOneTimeTransaction(transaction: OneTimeTransaction, currentDate: Date): boolean {
         if (!transaction.active) return false;
-        currentDate.setHours(0, 0, 0, 0);
-        transaction.effectiveDate?.setHours(0, 0, 0, 0);
         return currentDate.getTime() === transaction.effectiveDate?.getTime();
     }
 
@@ -315,79 +351,16 @@ class Projection{
 }
 
 
-
-
-
-
-
-
 async function main(){
     let user = new User("user");
     await user.loadAccounts();
     await user.loadHistory();
-
+    await user.loadTransactions();
+    
+    let projection = new Projection(user);
+    projection.create(365*1);
     let ui = new UserInterface();
-    ui.renderTimeLineTable(user);
-    
-
-    // Setting up One Time transactions
-    let oneTimeTransaction = new OneTimeTransaction("Car Down Payment");
-    oneTimeTransaction.amount = 1000;
-    oneTimeTransaction.from = "WS Checking";
-    oneTimeTransaction.effectiveDate = new Date(2026, 11, 12);
-    user.addOneTimeTransaction(oneTimeTransaction);
-
-    // Setting up recurring transactions
-    let recurring = new RecurringTransaction("Casino Salary");
-    recurring.amount = 1200;
-    recurring.frequency = Frequency.Biweekly;
-    recurring.startDate = new Date(2026, 7, 6);
-    recurring.to = "WS Checking";
-    user.addRecurringTransaction(recurring);
-
-    recurring = new RecurringTransaction("Casino Tips");
-    recurring.amount = 400;
-    recurring.frequency = Frequency.Weekly;
-    recurring.startDate = new Date(2026, 7, 11);
-    recurring.to = "WS Checking";
-    user.addRecurringTransaction(recurring);
-
-    recurring = new RecurringTransaction("TFSA Contribution");
-    recurring.amount = 1350;
-    recurring.frequency = Frequency.Monthly;
-    recurring.from = "WS Checking";
-    recurring.to = "TFSA";
-    recurring.startDate = new Date(2026, 8, 2);
-    recurring.active = true;
-    user.addRecurringTransaction(recurring);
-
-    recurring = new RecurringTransaction("Rent");
-    recurring.amount = 750;
-    recurring.frequency = Frequency.Monthly;
-    recurring.from = "WS Checking";
-    recurring.startDate = new Date(2026, 7, 28);
-    user.addRecurringTransaction(recurring);
-
-    recurring = new RecurringTransaction("Grandmother Debt");
-    recurring.amount = 400;
-    recurring.frequency = Frequency.Monthly;
-    recurring.from = "WS Checking";
-    recurring.startDate = new Date(2026, 7, 20);
-    user.addRecurringTransaction(recurring);
-
-    recurring = new RecurringTransaction("Allowance");
-    recurring.amount = 300;
-    recurring.frequency = Frequency.Biweekly;
-    recurring.from = "WS Checking";
-    recurring.startDate = new Date(2026, 7, 30);
-    user.addRecurringTransaction(recurring);
-
-    
-    //let projection = new Projection(user);
-    //projection.create(365*5);
-    //ui.renderProjection(projection);
-    
-
+    ui.renderTimeLineTable(user, projection.future);
 }
 
 main();

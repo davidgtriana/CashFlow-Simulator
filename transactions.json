@@ -1,0 +1,75 @@
+{
+    "oneTimeTransactions": [
+        {
+            "concept": "Car Down Payment",
+            "amount": 1000,
+            "from": "WS Checking",
+            "to": null,
+            "active": true,
+            "effectiveDate": "2026-12-12"
+        }
+    ],
+
+    "recurringTransactions": [
+        {
+            "concept": "Casino Salary",
+            "amount": 1200,
+            "from": null,
+            "to": "WS Checking",
+            "active": true,
+            "frequency": "Biweekly",
+            "startDate": "2026-08-06",
+            "endDate": null
+        },
+        {
+            "concept": "Casino Tips",
+            "amount": 400,
+            "from": null,
+            "to": "WS Checking",
+            "active": true,
+            "frequency": "Weekly",
+            "startDate": "2026-08-11",
+            "endDate": null
+        },
+        {
+            "concept": "TFSA Contribution",
+            "amount": 1350,
+            "from": "WS Checking",
+            "to": "TFSA",
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-09-02",
+            "endDate": null
+        },
+        {
+            "concept": "Rent",
+            "amount": 750,
+            "from": "WS Checking",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-28",
+            "endDate": null
+        },
+        {
+            "concept": "Grandmother Debt",
+            "amount": 400,
+            "from": "WS Checking",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-20",
+            "endDate": null
+        },
+        {
+            "concept": "Allowance",
+            "amount": 300,
+            "from": "WS Checking",
+            "to": null,
+            "active": true,
+            "frequency": "Biweekly",
+            "startDate": "2026-08-30",
+            "endDate": null
+        }
+    ]
+}

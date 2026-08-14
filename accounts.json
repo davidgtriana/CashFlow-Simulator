@@ -10,7 +10,8 @@
             "name": "WS Checking"
         },
         {
-            "name": "SB Checking"
+            "name": "SB Checking",
+            "interestRate": 0.00
         },
         {
             "name": "TFSA",
