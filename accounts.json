@@ -1,0 +1,26 @@
+{
+    "accounts": [
+        {
+            "name": "Cash"
+        },
+        {
+            "name": "EF"
+        },
+        {
+            "name": "WS Checking"
+        },
+        {
+            "name": "SB Checking"
+        },
+        {
+            "name": "TFSA",
+            "interestRate": 0.08
+        },
+        {
+            "name": "WS Credit Card"
+        },
+        {
+            "name": "WS Line of Credit"
+        }
+    ]
+}

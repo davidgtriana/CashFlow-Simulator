@@ -1,0 +1,77 @@
+{
+    "history": [
+        {
+            "date": "2026-08-09",
+            "concepts": [],
+            "balances": {
+                "Cash": 600,
+                "EF": 100,
+                "WS Checking": 1200,
+                "SB Checking": 50,
+                "TFSA": 8800,
+                "WS Credit Card": -350,
+                "WS Line of Credit": -2300
+            }
+        },
+        {
+            "date": "2026-08-10",
+            "concepts": [
+                "Casino Salary"
+            ],
+            "balances": {
+                "Cash": 600,
+                "EF": 100,
+                "WS Checking": 2400,
+                "SB Checking": 50,
+                "TFSA": 8800,
+                "WS Credit Card": -350,
+                "WS Line of Credit": -2300
+            }
+        },
+        {
+            "date": "2026-08-11",
+            "concepts": [
+                "Casino Tips"
+            ],
+            "balances": {
+                "Cash": 1000,
+                "EF": 100,
+                "WS Checking": 2400,
+                "SB Checking": 50,
+                "TFSA": 8800,
+                "WS Credit Card": -350,
+                "WS Line of Credit": -2300
+            }
+        },
+        {
+            "date": "2026-08-12",
+            "concepts": [
+                "Credit Card Payment"
+            ],
+            "balances": {
+                "Cash": 1000,
+                "EF": 100,
+                "WS Checking": 2050,
+                "SB Checking": 50,
+                "TFSA": 8800,
+                "WS Credit Card": 0,
+                "WS Line of Credit": -2300
+            }
+        },
+        {
+            "date": "2026-08-13",
+            "concepts": [
+                "TFSA Contribution"
+            ],
+            "balances": {
+                "Cash": 1000,
+                "EF": 100,
+                "WS Checking": 850,
+                "SB Checking": 50,
+                "TFSA": 10000,
+                "WS Credit Card": 0,
+                "WS Line of Credit": -2300
+            }
+        }
+    ]
+}

@@ -1,9 +1,113 @@
 let currency = "CAD";
 
+
+class UserInterface {
+    constructor(){}
+    renderTimeLineTable(user: User){
+        const container = document.getElementById("timeline-table")!;
+        container.innerHTML = `
+            <table>
+                <thead id="table-header"></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        `;
+        this.renderTableHeader(user.accounts);
+        this.renderHistory(user);
+        //this.renderProjection();
+    }
+
+    renderTableHeader(accounts: Map<number,Account>){
+        const headerHTML = document.getElementById("table-header")!;
+        headerHTML.innerHTML = `
+        <tr>
+            <th id="col-date">Date</th>
+            <th id="col-concept">Concept</th>
+            ${Array.from(accounts.values())
+                .map(account => `<th id="col-account">${account.name}</th>`)
+                .join("")}
+            <th id="col-net">Net Worth</th>
+        </tr>`;
+    }
+    renderHistory(user: User){
+        const tableBody = document.getElementById("table-body")!;
+        let html = `
+        <tr class="section-row">
+            <td colspan="${user.accounts.size + 3}">Actual History</td>
+        </tr>`;
+        for (const entry of user.history) {
+            html += `
+                <tr>
+                    <td>${entry.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
+                    <td>${this.printConcepts(entry.concepts)}</td>
+
+                    ${Array.from(user.accounts.values())
+                        .map(account =>
+                            `<td>${this.formatCurrency(
+                                entry.balances.get(account.id) ?? 0
+                            )}</td>`
+                        )
+                        .join("")}
+
+                    <td>${this.formatCurrency(entry.netWorth)}</td>
+                </tr>
+            `;
+        }
+    tableBody.innerHTML += html;
+    }
+/*
+    renderProjection(projection : Projection){
+        const container = document.getElementById("projection-table")!;
+        if (projection.days.length === 0){
+            container.innerHTML = "No projected days yet.";
+            return;
+        }
+        
+        const rowsHTML = projection.days.map(day => {
+        return `
+            <tr>
+                <td>${day.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
+                <td class="concept-cell">${this.printConcepts(day.concepts)}</td>
+                ${Array.from(projection.user.accounts.values())
+                    .map(account =>`<td> ${this.formatCurrency(day.balances.get(account.id) ?? 0)} </td>`)
+                    .join("")}
+                <td>${this.formatCurrency(day.netWorth)}</td>
+            </tr>
+        `;
+        }).join("");
+
+  
+    }*/
+    formatCurrency(value: number): string {
+        return value.toLocaleString("en-CA", {style: "currency", currency: "CAD"});
+    }
+
+    printConcepts(concepts: string[]): string{
+        if (concepts.length > 1){
+            return `
+                <div class="concept-menu">
+                    <span class="concept-label">
+                        ${concepts.length} Transactions
+                    </span>
+
+                    <div class="concept-dropdown">
+                        ${concepts
+                            .map(concept => `<div>${concept}</div>`)
+                            .join("")}
+                    </div>
+                </div>
+            `;
+        } else if (concepts.length === 1){
+            return concepts[0];
+        } else {
+            return `<span class="no-transaction">No Transaction</span>`;
+        }   
+    }
+    
+}
+
 class Account{
     id: number = 0;
     name: string;
-    balance: number = 0;
     interestRate: number = 0;
     constructor(name: string){
         this.name = name;
@@ -42,6 +146,7 @@ class RecurringTransaction extends Transaction{
 class User{
     name: string;
     accounts: Map<number, Account> = new Map();
+    history: TimeLineEntry[] = [];
     recurringTransactions: RecurringTransaction[] = [];
     oneTimeTransactions: OneTimeTransaction[] = [];
     constructor(name: string){
@@ -70,24 +175,40 @@ class User{
         this.recurringTransactions.push(transaction);
     }
 
-
-    getBalances(): Map<number, number>{
-        let balances = new Map<number , number>();
-        this.accounts.forEach(account => {
-            balances.set(account.id, account.balance);
-        });
-        return balances;
+    async loadAccounts(){
+        const response = await fetch("accounts.json");
+        const data = await response.json();
+        for(const accountData of data.accounts){
+            let account = new Account(accountData.name);
+            account.interestRate = accountData.interestRate;
+            this.addAccount(account);
+        }
+    }
+    async loadHistory(){
+        const response = await fetch("history.json");
+        const data = await response.json();
+        for(const entryData of data.history){
+            const [year, month, day] = entryData.date.split("-").map(Number);
+            let newDate = new Date(year, month - 1, day);
+            newDate.setHours(0, 0, 0, 0);
+            let newConcepts = entryData.concepts;
+            let newBalances = new Map<number, number>();
+            for (const accountName in entryData.balances) {
+                const accountId = this.getAccountIdByName(accountName);
+                newBalances.set(accountId,entryData.balances[accountName]);
+            }
+            this.history.push(new TimeLineEntry(newDate, newConcepts, newBalances));
+        }
+        this.history.sort((a, b) => {return a.date.getTime() - b.date.getTime();});
     }
 }
 
-class Day{
-    id: number;
+class TimeLineEntry{
     date: Date;
     concepts: string[] = [];
     balances: Map<number, number>; // ID of the Account : Balance
     netWorth: number = 0;
-    constructor(id: number, date: Date, concepts: string[], balances: Map<number, number>){
-        this.id = id;
+    constructor(date: Date, concepts: string[], balances: Map<number, number>){
         this.date = date;
         this.concepts = concepts;
         this.balances = balances;
@@ -99,20 +220,18 @@ class Day{
 
 class Projection{
     user: User;
-    days: Day[] = [];
+    future: TimeLineEntry[] = [];
     constructor(user: User){
         this.user = user;
     }
 
-    create(daysToProject: number){
-        let initialDate = new Date();                                                                                                                                                                                                                                                                                                                                                                                                                                           
-        this.days.push(new Day(1, initialDate, ["Initial day"], this.user.getBalances()));
+    create(daysToProject: number){                                                                                                                                                                                                                                                                                                                                                                                                                                       
+        this.future.push(this.user.history[this.user.history.length - 1]);
         for(let i = 0; i < daysToProject; i++){
             // Get the last day in the projection
-            let previousDay = this.days[this.days.length-1];
+            let previousDay = this.future[this.future.length-1];
 
             // Create a new day based on the previous day
-            let newID = previousDay.id + 1;
             let newDate = new Date (previousDay.date);
             newDate.setDate(previousDay.date.getDate() + 1);
             let newConcept: string[] = [];
@@ -143,7 +262,7 @@ class Projection{
             }
     
             // Save the new day in the projection
-            this.days.push(new Day(newID, newDate, newConcept, newBalances));
+            this.future.push(new TimeLineEntry(newDate, newConcept, newBalances));
         }
     }
 
@@ -193,160 +312,84 @@ class Projection{
             return false;
         }   
     }
-
-    
-
-    print(){
-        const container = document.getElementById("projection-table")!;
-        if (this.days.length === 0){
-            container.innerHTML = "No projected days yet.";
-            return;
-        }
-            
-        const headerHTML = `
-        <tr>
-            <th id="col-date">Date</th>
-            <th id="col-concept">Concept</th>
-            ${Array.from(this.user.accounts.values())
-                .map(account => `<th id="col-account">${account.name}</th>`)
-                .join("")}
-            <th id="col-net">Net Worth</th>
-        </tr>`;
-
-        const rowsHTML = this.days.map(day => {
-        return `
-            <tr>
-                <td>${day.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
-                <td class="concept-cell">${this.printConcepts(day.concepts)}</td>
-                ${Array.from(this.user.accounts.values())
-                    .map(account =>`<td> ${this.formatCurrency(day.balances.get(account.id) ?? 0)} </td>`)
-                    .join("")}
-                <td>${this.formatCurrency(day.netWorth)}</td>
-            </tr>
-        `;
-        }).join("");
-
-        container.innerHTML =
-        `
-        <table>
-            <thead>${headerHTML}</thead>
-            <tbody>${rowsHTML}</tbody>
-        </table>
-        `;
-    }
-
-    formatCurrency(value: number): string {
-        return value.toLocaleString("en-CA", {style: "currency", currency: "CAD"});
-    }
-
-    printConcepts(concepts: string[]): string{
-        if (concepts.length > 1){
-            return `
-                <div class="concept-menu">
-                    <span class="concept-label">
-                        ${concepts.length} Transactions
-                    </span>
-
-                    <div class="concept-dropdown">
-                        ${concepts
-                            .map(concept => `<div>${concept}</div>`)
-                            .join("")}
-                    </div>
-                </div>
-            `;
-        } else if (concepts.length === 1){
-            return concepts[0];
-        } else {
-            return `<span class="no-transaction">No Transaction</span>`;
-        }   
-    }
 }
 
-let david = new User("David");
 
-let account = new Account("Cash");
-account.balance = 900;
-david.addAccount(account);
 
-account = new Account("EF");
-account.balance = 100;
-david.addAccount(account);
 
-account = new Account("WS Checking");
-account.balance = 100;
-david.addAccount(account);
 
-account = new Account("SB Checking");
-account.balance = 50;
-david.addAccount(account);
 
-account = new Account("TFSA");
-account.balance = 10000;
-account.interestRate = 0.08; // 10% APR
-david.addAccount(account);
 
-account = new Account("WS Credit Card");
-account.balance = 0;
-david.addAccount(account);
 
-account = new Account("WS Line of Credit");
-account.balance = -2008.95;
-david.addAccount(account);
+async function main(){
+    let user = new User("user");
+    await user.loadAccounts();
+    await user.loadHistory();
 
-// Setting up One Time transactions
-let oneTimeTransaction = new OneTimeTransaction("Car Down Payment");
-oneTimeTransaction.amount = 1000;
-oneTimeTransaction.from = "WS Checking";
-oneTimeTransaction.effectiveDate = new Date(2026, 11, 12);
-david.addOneTimeTransaction(oneTimeTransaction);
+    let ui = new UserInterface();
+    ui.renderTimeLineTable(user);
+    
 
-// Setting up recurring transactions
-let recurring = new RecurringTransaction("Casino Salary");
-recurring.amount = 1200;
-recurring.frequency = Frequency.Biweekly;
-recurring.startDate = new Date(2026, 7, 6);
-recurring.to = "WS Checking";
-david.addRecurringTransaction(recurring);
+    // Setting up One Time transactions
+    let oneTimeTransaction = new OneTimeTransaction("Car Down Payment");
+    oneTimeTransaction.amount = 1000;
+    oneTimeTransaction.from = "WS Checking";
+    oneTimeTransaction.effectiveDate = new Date(2026, 11, 12);
+    user.addOneTimeTransaction(oneTimeTransaction);
 
-recurring = new RecurringTransaction("Casino Tips");
-recurring.amount = 400;
-recurring.frequency = Frequency.Weekly;
-recurring.startDate = new Date(2026, 7, 11);
-recurring.to = "WS Checking";
-david.addRecurringTransaction(recurring);
+    // Setting up recurring transactions
+    let recurring = new RecurringTransaction("Casino Salary");
+    recurring.amount = 1200;
+    recurring.frequency = Frequency.Biweekly;
+    recurring.startDate = new Date(2026, 7, 6);
+    recurring.to = "WS Checking";
+    user.addRecurringTransaction(recurring);
 
-recurring = new RecurringTransaction("TFSA Contribution");
-recurring.amount = 1350;
-recurring.frequency = Frequency.Monthly;
-recurring.from = "WS Checking";
-recurring.to = "TFSA";
-recurring.startDate = new Date(2026, 8, 2);
-recurring.active = true;
-david.addRecurringTransaction(recurring);
+    recurring = new RecurringTransaction("Casino Tips");
+    recurring.amount = 400;
+    recurring.frequency = Frequency.Weekly;
+    recurring.startDate = new Date(2026, 7, 11);
+    recurring.to = "WS Checking";
+    user.addRecurringTransaction(recurring);
 
-recurring = new RecurringTransaction("Rent");
-recurring.amount = 750;
-recurring.frequency = Frequency.Monthly;
-recurring.from = "WS Checking";
-recurring.startDate = new Date(2026, 7, 28);
-david.addRecurringTransaction(recurring);
+    recurring = new RecurringTransaction("TFSA Contribution");
+    recurring.amount = 1350;
+    recurring.frequency = Frequency.Monthly;
+    recurring.from = "WS Checking";
+    recurring.to = "TFSA";
+    recurring.startDate = new Date(2026, 8, 2);
+    recurring.active = true;
+    user.addRecurringTransaction(recurring);
 
-recurring = new RecurringTransaction("Grandmother Debt");
-recurring.amount = 400;
-recurring.frequency = Frequency.Monthly;
-recurring.from = "WS Checking";
-recurring.startDate = new Date(2026, 7, 20);
-david.addRecurringTransaction(recurring);
+    recurring = new RecurringTransaction("Rent");
+    recurring.amount = 750;
+    recurring.frequency = Frequency.Monthly;
+    recurring.from = "WS Checking";
+    recurring.startDate = new Date(2026, 7, 28);
+    user.addRecurringTransaction(recurring);
 
-recurring = new RecurringTransaction("Allowance");
-recurring.amount = 300;
-recurring.frequency = Frequency.Biweekly;
-recurring.from = "WS Checking";
-recurring.startDate = new Date(2026, 7, 30);
-david.addRecurringTransaction(recurring);
+    recurring = new RecurringTransaction("Grandmother Debt");
+    recurring.amount = 400;
+    recurring.frequency = Frequency.Monthly;
+    recurring.from = "WS Checking";
+    recurring.startDate = new Date(2026, 7, 20);
+    user.addRecurringTransaction(recurring);
 
-let projection = new Projection(david);
-projection.create(365*5);
-projection.print();
+    recurring = new RecurringTransaction("Allowance");
+    recurring.amount = 300;
+    recurring.frequency = Frequency.Biweekly;
+    recurring.from = "WS Checking";
+    recurring.startDate = new Date(2026, 7, 30);
+    user.addRecurringTransaction(recurring);
+
+    
+    //let projection = new Projection(user);
+    //projection.create(365*5);
+    //ui.renderProjection(projection);
+    
+
+}
+
+main();
 
 
