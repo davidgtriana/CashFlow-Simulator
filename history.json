@@ -1,76 +1,205 @@
 {
     "history": [
         {
-            "date": "2026-08-09",
+            "date": "2026-02-06",
             "concepts": [],
             "balances": {
-                "Cash": 600,
-                "EF": 100,
-                "WS Checking": 1200,
-                "SB Checking": 50,
-                "TFSA": 8800,
-                "WS Credit Card": -350,
-                "WS Line of Credit": -2300
+                "Cash": 1200,
+                "EF": 1785.85,
+                "WS Checking": 90.89,
+                "SB Checking": 329.08,
+                "TFSA": 2427.18
             }
         },
         {
-            "date": "2026-08-10",
-            "concepts": [
-                "Casino Salary"
-            ],
+            "date": "2026-02-28",
+            "concepts": [],
             "balances": {
-                "Cash": 600,
-                "EF": 100,
-                "WS Checking": 2400,
-                "SB Checking": 50,
-                "TFSA": 8800,
-                "WS Credit Card": -350,
-                "WS Line of Credit": -2300
+                "Cash": 484.75,
+                "EF": 311.40,
+                "WS Checking": 46.72,
+                "SB Checking": 112.12,
+                "TFSA": 2527.69,
+                "SB Credit Card": -1717.89
             }
         },
         {
-            "date": "2026-08-11",
-            "concepts": [
-                "Casino Tips"
-            ],
+            "date": "2026-03-29",
+            "concepts": [],
             "balances": {
-                "Cash": 1000,
-                "EF": 100,
-                "WS Checking": 2400,
-                "SB Checking": 50,
-                "TFSA": 8800,
-                "WS Credit Card": -350,
-                "WS Line of Credit": -2300
+                "Cash": 0,
+                "EF": 128.10,
+                "WS Checking": 34.75,
+                "SB Checking": 125.72,
+                "Poker": 2580,
+                "TFSA": 4567,
+                "SB Credit Card": -14.94
             }
         },
         {
-            "date": "2026-08-12",
-            "concepts": [
-                "Credit Card Payment"
-            ],
+            "date": "2026-04-01",
+            "concepts": [],
             "balances": {
-                "Cash": 1000,
-                "EF": 100,
-                "WS Checking": 2050,
-                "SB Checking": 50,
-                "TFSA": 8800,
-                "WS Credit Card": 0,
-                "WS Line of Credit": -2300
+                "Cash": 0,
+                "EF": 1271.89,
+                "WS Checking": 44.88,
+                "SB Checking": 126.32,
+                "Poker": 5590,
+                "TFSA": 4725.02,
+                "SB Credit Card": -80
             }
         },
         {
-            "date": "2026-08-13",
-            "concepts": [
-                "TFSA Contribution"
-            ],
+            "date": "2026-04-03",
+            "concepts": [],
             "balances": {
-                "Cash": 1000,
-                "EF": 100,
-                "WS Checking": 850,
+                "Cash": 15,
+                "EF": 6027.29,
+                "WS Checking": 43.57,
+                "SB Checking": 210.67,
+                "Poker": 550,
+                "TFSA": 4740.10,
+                "SB Credit Card": -320.41
+            }
+        },
+        {
+            "date": "2026-04-10",
+            "concepts": [],
+            "balances": {
+                "Cash": 10,
+                "EF": 3445.72,
+                "WS Checking": 25.86,
                 "SB Checking": 50,
-                "TFSA": 10000,
-                "WS Credit Card": 0,
-                "WS Line of Credit": -2300
+                "Poker": 0,
+                "TFSA": 4914.74
+            }
+        },
+        {
+            "date": "2026-04-17",
+            "concepts": [],
+            "balances": {
+                "Cash": 430,
+                "EF": 3799.13,
+                "WS Checking": 10.04,
+                "SB Checking": 50,
+                "Poker": 0,
+                "TFSA": 5101.08
+            }
+        },
+        {
+            "date": "2026-04-30",
+            "concepts": [],
+            "balances": {
+                "Cash": 1620,
+                "EF": 3166.34,
+                "WS Checking": 140.28,
+                "SB Checking": 46.05,
+                "Poker": 1140,
+                "TFSA": 5172.23
+            }
+        },
+        {
+            "date": "2026-05-01",
+            "concepts": [],
+            "balances": {
+                "Cash": 0,
+                "EF": 5430.98,
+                "WS Checking": 91.77,
+                "SB Checking": 46.05,
+                "Poker": 1140,
+                "TFSA": 5784.24
+            }
+        },
+        {
+            "date": "2026-05-07",
+            "concepts": [],
+            "balances": {
+                "Cash": 0,
+                "EF": 440.36,
+                "WS Checking": 98.84,
+                "SB Checking": 4,
+                "Poker": 0,
+                "TFSA": 5914.21
+            }
+        },
+        {
+            "date": "2026-05-14",
+            "concepts": [],
+            "balances": {
+                "Cash": 0,
+                "EF": 3298.29,
+                "WS Checking": 18.41,
+                "SB Checking": 5.29,
+                "Poker": 0,
+                "TFSA": 7319.99,
+                "SB Credit Card": -254.4
+            }
+        },
+        {
+            "date": "2026-05-18",
+            "concepts": [],
+            "balances": {
+                "Cash": 560,
+                "EF": 2792.29,
+                "WS Checking": 148.59,
+                "SB Checking": 210.67,
+                "TFSA": 7242.15,
+                "SB Credit Card": -353.28
+            }
+        },
+        {
+            "date": "2026-05-22",
+            "concepts": [],
+            "balances": {
+                "Cash": 0,
+                "EF": 2500,
+                "WS Checking": 5183,
+                "SB Checking": 86.83,
+                "Poker": 0,
+                "TFSA": 7314.88,
+                "SB Credit Card": -146.67
+            }
+        },
+        {
+            "date": "2026-05-27",
+            "concepts": [],
+            "balances": {
+                "Cash": 0,
+                "EF": 3000,
+                "WS Checking": 602.28,
+                "SB Checking": 18.43,
+                "Poker": 0,
+                "TFSA": 8583.96,
+                "SB Credit Card": -490.82
+            }
+        },
+        {
+            "date": "2026-05-30",
+            "concepts": [],
+            "balances": {
+                "Cash": 375,
+                "EF": 3000,
+                "WS Checking": 1997.74,
+                "SB Checking": 18.43,
+                "Poker": 0,
+                "TFSA": 8614.78,
+                "SB Credit Card": -688.78
+            }
+        },
+        {
+            "date": "2026-08-14",
+            "concepts": [],
+            "balances": {
+                "Cash": 410,
+                "EF": 103,
+                "WS Checking": 1297.62,
+                "SB Checking": 100,
+                "Poker": 0.16,
+                "TFSA": 9932.84,
+                "SB Credit Card": -182.12,
+                "WS Credit Card": -639.65,
+                "WM Credit Card": -161.49,
+                "WS Line of Credit": -2008.95
             }
         }
     ]

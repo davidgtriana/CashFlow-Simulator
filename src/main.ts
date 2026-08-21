@@ -1,105 +1,35 @@
+
+import { UserInterface } from "./userInterface.js";
+
 let currency = "CAD";
 
+/***
+ * ideas:
+ *  - Support accounts with different and updated currencies
+ *  - Make the projection follow the ideal process of pay debts, then emergency fund then investment
+ *  - Transactions: Add, Edit, Remove
+ *  - Accounts: Add, Edit, Remove
+ *  - Users: Add, Edit, Remove
+ *  - Edit JSON files to save info
+ *  - Export as an Excel file
+ *  */ 
 
-class UserInterface {
-    constructor(){}
-    renderTimeLineTable(user: User, future: TimeLineEntry[]){
-        const container = document.getElementById("timeline-table")!;
-        container.innerHTML = `
-            <table>
-                <thead id="table-header"></thead>
-                <tbody id="table-body"></tbody>
-            </table>
-        `;
-        this.renderTableHeader(user.accounts);
-        this.renderHistory(user);
-        this.renderProjection(user, future);
-    }
-
-    renderTableHeader(accounts: Map<number,Account>){
-        const headerHTML = document.getElementById("table-header")!;
-        headerHTML.innerHTML = `
-        <tr>
-            <th class="col-date">Date</th>
-            <th class="col-concept">Concept</th>
-            ${Array.from(accounts.values())
-                .map(account => `<th class="col-account">${account.name}</th>`)
-                .join("")}
-            <th class="col-net">Net Worth</th>
-        </tr>`;
-    }
-    renderHistory(user: User){
-        const tableBody = document.getElementById("table-body")!;
-        this.renderSection("Actual History", user);
-        let html = ``;
-        for (const entry of user.history)
-            html += this.renderTimeLineEntry(entry, user);
-        tableBody.innerHTML += html;
-    }
-
-    renderProjection(user: User, future: TimeLineEntry[]){
-        const tableBody = document.getElementById("table-body")!;
-        this.renderSection("Projection", user);
-        let html = ``;
-        for (const entry of future)
-            html += this.renderTimeLineEntry(entry, user);
-        tableBody.innerHTML += html;
-    }
-
-    renderSection(title: string, user: User){
-        const tableBody = document.getElementById("table-body")!;
-        let html = `
-        <tr class="section-row">
-            <td colspan="${user.accounts.size + 3}">${title}</td>
-        </tr>`;
-        tableBody.innerHTML += html;
-    }
-
-
-    renderTimeLineEntry(entry: TimeLineEntry, user: User): string {
-        return `
-            <tr>
-                <td>${entry.date.toLocaleDateString("en-GB", {day: "2-digit",month: "short",year: "2-digit"})}</td>
-                <td>${this.printConcepts(entry.concepts)}</td>
-                ${Array.from(user.accounts.values())
-                    .map(account =>`<td>${this.formatCurrency(entry.balances.get(account.id) ?? 0)}</td>`).join("")}
-                <td>${this.formatCurrency(entry.netWorth)}</td>
-            </tr>
-        `;
-    }
-
-    formatCurrency(value: number): string {
-        return value.toLocaleString("en-CA", {style: "currency", currency: "CAD"});
-    }
-
-    printConcepts(concepts: string[]): string{
-        if (concepts.length > 1){
-            return `
-                <div class="concept-menu">
-                    <span class="concept-label">
-                        ${concepts.length} Transactions
-                    </span>
-
-                    <div class="concept-dropdown">
-                        ${concepts
-                            .map(concept => `<div>${concept}</div>`)
-                            .join("")}
-                    </div>
-                </div>
-            `;
-        } else if (concepts.length === 1){
-            return concepts[0];
-        } else {
-            return `<span class="no-transaction">No Transaction</span>`;
-        }   
-    }
-    
+enum AccountType {
+    Cash,
+    Checking,
+    Savings,
+    Investment,
+    CreditCard,
+    LineOfCredit,
+    Loan
 }
-
-class Account{
+enum AccountCategory{ Asset, Liability}
+export class Account{
     id: number = 0;
     name: string;
     interestRate: number = 0;
+    type: AccountType = AccountType.Checking;
+    category: AccountCategory = AccountCategory.Asset;
     constructor(name: string){
         this.name = name;
     }
@@ -134,7 +64,7 @@ class RecurringTransaction extends Transaction{
     }
 }
 
-class User{
+export class User{
     name: string;
     accounts: Map<number, Account> = new Map();
     history: TimeLineEntry[] = [];
@@ -172,6 +102,10 @@ class User{
         for(const accountData of data.accounts){
             let account = new Account(accountData.name);
             account.interestRate = accountData.interestRate ?? 0;
+            if(accountData.type){
+                account.type = this.parseAccountType(accountData.type);
+                account.category = this.getAccountCategory(account.type);
+            }
             this.addAccount(account);
         }
     }
@@ -236,9 +170,29 @@ class User{
             default: throw new Error(`Unknown frequency: ${frequency}`);
         }
     }
+    parseAccountType(type: string): AccountType {
+        switch (type) {
+            case "Checking": return AccountType.Checking;
+            case "Savings": return AccountType.Savings;
+            case "Investment": return AccountType.Investment;
+            case "CreditCard": return AccountType.CreditCard;
+            case "LineOfCredit": return AccountType.LineOfCredit;
+            case "Loan": return AccountType.Loan;
+            default: throw new Error(`Unknown frequency: ${type}`);
+        }
+    }
+    getAccountCategory(type: AccountType): AccountCategory {
+        switch (type) {
+            case AccountType.CreditCard: 
+            case AccountType.LineOfCredit:
+            case AccountType.Loan:
+                return AccountCategory.Liability;
+            default: return AccountCategory.Asset;
+        }
+    }
 }
 
-class TimeLineEntry{
+export class TimeLineEntry{
     date: Date;
     concepts: string[] = [];
     balances: Map<number, number>; // ID of the Account : Balance
@@ -358,8 +312,11 @@ async function main(){
     await user.loadTransactions();
     
     let projection = new Projection(user);
-    projection.create(365*1);
+    projection.create((365/12)*4);
+
     let ui = new UserInterface();
+    ui.charts.renderNetWorthChart(user.history,projection.future);
+
     ui.renderTimeLineTable(user, projection.future);
 }
 

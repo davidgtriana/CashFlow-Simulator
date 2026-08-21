@@ -4,24 +4,45 @@
             "name": "Cash"
         },
         {
-            "name": "EF"
+            "name": "EF",
+            "interestRate": 0.0175,
+            "type": "Savings"
         },
         {
-            "name": "WS Checking"
+            "name": "WS Checking",
+            "interestRate": 0.0175
         },
         {
-            "name": "SB Checking",
-            "interestRate": 0.00
+            "name": "SB Checking"
         },
         {
             "name": "TFSA",
-            "interestRate": 0.08
+            "interestRate": 0.08,
+            "type": "Investment"
         },
         {
-            "name": "WS Credit Card"
+            "name": "Poker",
+            "interestRate": 0.0175
         },
         {
-            "name": "WS Line of Credit"
+            "name": "SB Credit Card",
+            "interestRate": 0.229,
+            "type": "CreditCard"
+        },
+        {
+            "name": "WM Credit Card",
+            "interestRate": 0.229,
+            "type": "CreditCard"
+        },
+        {
+            "name": "WS Credit Card",
+            "interestRate": 0.259,
+            "type": "CreditCard"
+        },
+        {
+            "name": "WS Line of Credit",
+            "interestRate": 0.0495,
+            "type": "LineOfCredit"
         }
     ]
 }

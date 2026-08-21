@@ -1,13 +1,6 @@
 {
     "oneTimeTransactions": [
-        {
-            "concept": "Car Down Payment",
-            "amount": 1000,
-            "from": "WS Checking",
-            "to": null,
-            "active": true,
-            "effectiveDate": "2026-12-12"
-        }
+
     ],
 
     "recurringTransactions": [
@@ -25,7 +18,7 @@
             "concept": "Casino Tips",
             "amount": 400,
             "from": null,
-            "to": "WS Checking",
+            "to": "Cash",
             "active": true,
             "frequency": "Weekly",
             "startDate": "2026-08-11",
@@ -33,7 +26,7 @@
         },
         {
             "concept": "TFSA Contribution",
-            "amount": 1350,
+            "amount": 1200,
             "from": "WS Checking",
             "to": "TFSA",
             "active": true,
@@ -44,7 +37,7 @@
         {
             "concept": "Rent",
             "amount": 750,
-            "from": "WS Checking",
+            "from": "Cash",
             "to": null,
             "active": true,
             "frequency": "Monthly",
@@ -63,12 +56,73 @@
         },
         {
             "concept": "Allowance",
-            "amount": 300,
+            "amount": 500,
             "from": "WS Checking",
-            "to": null,
+            "to": "WS Credit Card",
             "active": true,
             "frequency": "Biweekly",
             "startDate": "2026-08-30",
+            "endDate": null
+        },
+        {
+            "concept": "Phone Plan",
+            "amount": 39.20,
+            "from": "WS Credit Card",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-12",
+            "endDate": null
+        },
+        {
+            "concept": "Gym",
+            "amount": 34.65,
+            "from": "WS Credit Card",
+            "to": null,
+            "active": true,
+            "frequency": "Biweekly",
+            "startDate": "2026-08-10",
+            "endDate": null
+        },
+        {
+            "concept": "Apple Plan",
+            "amount": 1.44,
+            "from": "WS Credit Card",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-04",
+            "endDate": null
+        },
+        {
+            "concept": "Youtube Premium",
+            "amount": 20,
+            "from": "WS Credit Card",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-28",
+            "endDate": null
+        },
+        {
+            "concept": "ChatGPT Plan",
+            "amount": 36,
+            "from": "WS Credit Card",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-28",
+            "endDate": null
+        }
+        ,
+        {
+            "concept": "Transportation",
+            "amount": 100,
+            "from": "WS Credit Card",
+            "to": null,
+            "active": true,
+            "frequency": "Monthly",
+            "startDate": "2026-08-28",
             "endDate": null
         }
     ]
