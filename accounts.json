@@ -26,23 +26,48 @@
         },
         {
             "name": "SB Credit Card",
-            "interestRate": 0.229,
+            "interestRate": 0.2299,
+            "minimum": 30,
+            "frequency": "Monthly",
+            "from": "WS Checking",
+            "dueDate": "2026-09-19",
             "type": "CreditCard"
         },
         {
             "name": "WM Credit Card",
-            "interestRate": 0.229,
+            "interestRate": 0.2299,
+            "minimum": 20,
+            "frequency": "Monthly",
+            "from": "WS Checking",
+            "dueDate": "2026-10-09",
             "type": "CreditCard"
         },
         {
             "name": "WS Credit Card",
-            "interestRate": 0.259,
+            "interestRate": 0.2299,
+            "minimum": 100,
+            "frequency": "Biweekly",
+            "from": "WS Checking",
+            "dueDate": "2026-09-29",
             "type": "CreditCard"
         },
         {
-            "name": "WS Line of Credit",
+            "name": "WS LOC",
             "interestRate": 0.0495,
+            "minimum": 100,
+            "frequency": "Biweekly",
+            "from": "WS Checking",
+            "dueDate": "2026-10-01",
             "type": "LineOfCredit"
+        },
+        {
+            "name": "Money Mart",
+            "interestRate": 0.3467,
+            "minimum": 164.22,
+            "frequency": "Biweekly",
+            "from": "WS Checking",
+            "dueDate": "2026-10-01",
+            "type": "Loan"
         }
     ]
 }

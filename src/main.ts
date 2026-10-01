@@ -23,15 +23,24 @@ enum AccountType {
     LineOfCredit,
     Loan
 }
-enum AccountCategory{ Asset, Liability}
+
 export class Account{
     id: number = 0;
     name: string;
     interestRate: number = 0;
     type: AccountType = AccountType.Checking;
-    category: AccountCategory = AccountCategory.Asset;
     constructor(name: string){
         this.name = name;
+    }
+}
+class LiabilityAccount extends Account{
+    minimum: number = 0;
+    frequency: Frequency = 0;
+    from: string | null = null;
+    dueDate: Date | null = null;
+
+    constructor(name: string){
+        super(name);
     }
 }
 
@@ -100,11 +109,16 @@ export class User{
         const response = await fetch("accounts.json");
         const data = await response.json();
         for(const accountData of data.accounts){
-            let account = new Account(accountData.name);
+           const account = accountData.type && this.isLiabilityAccount(accountData.type)
+            ? new LiabilityAccount(accountData.name)
+            : new Account(accountData.name);
             account.interestRate = accountData.interestRate ?? 0;
-            if(accountData.type){
-                account.type = this.parseAccountType(accountData.type);
-                account.category = this.getAccountCategory(account.type);
+            account.type = this.parseAccountType(accountData.type ?? "Checking");
+            if(account instanceof LiabilityAccount){
+                account.minimum = accountData.minimum ?? 0;
+                account.frequency = this.parseFrequency(accountData.frequency ?? "Monthly");
+                account.from = accountData.from;
+                if(accountData.dueDate) account.dueDate = this.parseDate(accountData.dueDate);
             }
             this.addAccount(account);
         }
@@ -178,17 +192,17 @@ export class User{
             case "CreditCard": return AccountType.CreditCard;
             case "LineOfCredit": return AccountType.LineOfCredit;
             case "Loan": return AccountType.Loan;
-            default: throw new Error(`Unknown frequency: ${type}`);
+            default: throw new Error(`Unknown type: ${type}`);
         }
     }
-    getAccountCategory(type: AccountType): AccountCategory {
+    isLiabilityAccount(type: string): boolean {
         switch (type) {
-            case AccountType.CreditCard: 
-            case AccountType.LineOfCredit:
-            case AccountType.Loan:
-                return AccountCategory.Liability;
-            default: return AccountCategory.Asset;
+            case "CreditCard":
+            case "LineOfCredit":
+            case "Loan":
+                return true;
         }
+        return false;
     }
 }
 
@@ -207,9 +221,11 @@ export class TimeLineEntry{
     }
 }
 
+enum Strategy { Avalance, Snowball, MinimumPayment }
 class Projection{
     user: User;
     future: TimeLineEntry[] = [];
+    strategy: Strategy = Strategy.MinimumPayment;
     constructor(user: User){
         this.user = user;
     }
@@ -218,6 +234,7 @@ class Projection{
         if (this.user.history.length === 0) 
             throw new Error("Cannot create projection without historical data.");                                                                                                                                                                                                                                                                                                                                                                                                                                   
         this.future.push(this.user.history[this.user.history.length - 1]);
+
         for(let i = 0; i < daysToProject; i++){
             // Get the last day in the projection
             let previousDay = this.future[this.future.length-1];
@@ -239,7 +256,7 @@ class Projection{
             // Is there any One Time Transaction that should be applied today?
             for(let transaction of this.user.oneTimeTransactions){
                 if(this.shouldApplyOneTimeTransaction(transaction, newDate)){
-                    this.applyTransaction(transaction, newBalances)
+                    this.applyTransaction(transaction.from, transaction.to, transaction.amount, newBalances)
                     newConcept.push(transaction.concept);
                 }
             }
@@ -247,11 +264,31 @@ class Projection{
             // Is there any Recurrent Transaction that should be applied today?
             for(let transaction of this.user.recurringTransactions){
                 if(this.shouldApplyRecurringTransaction(transaction, newDate)){
-                    this.applyTransaction(transaction, newBalances)
+                    this.applyTransaction(transaction.from, transaction.to, transaction.amount, newBalances)
                     newConcept.push(transaction.concept);
                 }
             }
-    
+
+            // Is there any Liability Account payment that should be applied today?
+            for(let account of this.user.accounts.values()){
+                if(account instanceof LiabilityAccount){
+                    if(this.shouldApplyLiabilityPayment(account, newDate)){
+
+                        // Find current balance of the account
+                        const accountId = this.user.getAccountIdByName(account.name);
+                        const balance = newBalances.get(accountId)!;
+                        if(balance <= 0) continue; // No payment needed if the balance is zero or positive
+                        const amountOwed = Math.abs(balance);
+                        
+                        // Calculate the payment amount based on the minimum payment and the amount owed
+                        const payment = Math.min( account.minimum, amountOwed);
+
+                        this.applyTransaction(account.from, account.name, payment, newBalances);
+                        newConcept.push(account.name + " Payment");
+                    }
+                }
+            }
+
             // Save the new day in the projection
             this.future.push(new TimeLineEntry(newDate, newConcept, newBalances));
         }
@@ -259,18 +296,18 @@ class Projection{
     }
 
 
-    applyTransaction(transaction: Transaction, balances: Map<number, number>){
+    applyTransaction(from: string | null, to: string | null, amount: number, balances: Map<number, number>){
 
-        if (transaction.from) {
-            const id = this.user.getAccountIdByName(transaction.from);
+        if (from) {
+            const id = this.user.getAccountIdByName(from);
             const balance = balances.get(id)!;
-            balances.set(id,balance - transaction.amount);
+            balances.set(id,balance - amount);
         }
 
-        if (transaction.to) {
-            const id = this.user.getAccountIdByName(transaction.to);
+        if (to) {
+            const id = this.user.getAccountIdByName(to);
             const balance = balances.get(id)!;
-            balances.set(id,balance + transaction.amount);
+            balances.set(id,balance + amount);
         }
 
     }
@@ -302,6 +339,26 @@ class Projection{
             return false;
         }   
     }
+    shouldApplyLiabilityPayment(account: LiabilityAccount, currentDate: Date): boolean {
+        if (!account.from || !account.dueDate) return false;
+        if (currentDate < account.dueDate) return false;
+
+        const daysSinceDue = Math.floor((currentDate.getTime() - account.dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        switch (account.frequency) {
+            case Frequency.Daily:
+                return true;
+            case Frequency.Weekly:
+                return daysSinceDue % 7 === 0;
+            case Frequency.Biweekly:
+                return daysSinceDue % 14 === 0;
+            case Frequency.Monthly:
+                return currentDate.getDate() === account.dueDate.getDate();
+            case Frequency.Yearly:
+                return currentDate.getDate() === account.dueDate.getDate() && currentDate.getMonth() === account.dueDate.getMonth();
+            default:
+                return false;
+        }
+    }
 }
 
 
@@ -312,12 +369,14 @@ async function main(){
     await user.loadTransactions();
     
     let projection = new Projection(user);
-    projection.create((365/12)*4);
+    projection.create((365/12)*12);
 
     let ui = new UserInterface();
     ui.charts.renderNetWorthChart(user.history,projection.future);
 
     ui.renderTimeLineTable(user, projection.future);
+
+    console.log(user);   
 }
 
 main();

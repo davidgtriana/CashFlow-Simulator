@@ -29,7 +29,7 @@
             "amount": 1200,
             "from": "WS Checking",
             "to": "TFSA",
-            "active": true,
+            "active": false,
             "frequency": "Monthly",
             "startDate": "2026-09-02",
             "endDate": null
@@ -49,7 +49,7 @@
             "amount": 400,
             "from": "WS Checking",
             "to": null,
-            "active": true,
+            "active": false,
             "frequency": "Monthly",
             "startDate": "2026-08-20",
             "endDate": null
@@ -59,7 +59,7 @@
             "amount": 500,
             "from": "WS Checking",
             "to": "WS Credit Card",
-            "active": true,
+            "active": false,
             "frequency": "Biweekly",
             "startDate": "2026-08-30",
             "endDate": null
@@ -79,7 +79,7 @@
             "amount": 34.65,
             "from": "WS Credit Card",
             "to": null,
-            "active": true,
+            "active": false,
             "frequency": "Biweekly",
             "startDate": "2026-08-10",
             "endDate": null
@@ -113,14 +113,13 @@
             "frequency": "Monthly",
             "startDate": "2026-08-28",
             "endDate": null
-        }
-        ,
+        },
         {
             "concept": "Transportation",
             "amount": 100,
             "from": "WS Credit Card",
             "to": null,
-            "active": true,
+            "active": false,
             "frequency": "Monthly",
             "startDate": "2026-08-28",
             "endDate": null

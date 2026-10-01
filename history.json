@@ -199,7 +199,40 @@
                 "SB Credit Card": -182.12,
                 "WS Credit Card": -639.65,
                 "WM Credit Card": -161.49,
-                "WS Line of Credit": -2008.95
+                "WS LOC": -2008.95
+            }
+        },
+        {
+            "date": "2026-08-23",
+            "concepts": [],
+            "balances": {
+                "Cash": 0,
+                "EF": 0,
+                "WS Checking": 713.38,
+                "SB Checking": 96.05,
+                "Poker": 0,
+                "TFSA": 9737.80,
+                "SB Credit Card": -214.07,
+                "WS Credit Card": -587.80,
+                "WM Credit Card": -161.49,
+                "WS LOC": -2800
+            }
+        },
+        {
+            "date": "2026-09-30",
+            "concepts": [],
+            "balances": {
+                "Cash": 400,
+                "EF": 0.32,
+                "WS Checking": 225.67,
+                "SB Checking": 102.93,
+                "Poker": 0,
+                "TFSA": 9999.01,
+                "SB Credit Card": -3131.97,
+                "WS Credit Card": -2916.32,
+                "WM Credit Card": -907.04,
+                "WS LOC": -3411.07,
+                "Money Mart": -3768.25
             }
         }
     ]

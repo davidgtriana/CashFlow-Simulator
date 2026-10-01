@@ -117,7 +117,6 @@ class ChartRenderer {
             ...history,
             ...future
         ];
-        console.log(projectedTimeline);
         return {
             labels: 
                 timeline.map(entry => entry.date.toLocaleDateString( "en-GB", {day: "2-digit", month: "short", year: "2-digit"})),
