@@ -277,9 +277,9 @@ class Projection{
                         // Find current balance of the account
                         const accountId = this.user.getAccountIdByName(account.name);
                         const balance = newBalances.get(accountId)!;
-                        if(balance <= 0) continue; // No payment needed if the balance is zero or positive
+                        if(balance >= 0) continue; // No payment needed if the balance is zero or positive
                         const amountOwed = Math.abs(balance);
-                        
+
                         // Calculate the payment amount based on the minimum payment and the amount owed
                         const payment = Math.min( account.minimum, amountOwed);
 

@@ -220,7 +220,7 @@
         },
         {
             "date": "2026-09-30",
-            "concepts": [],
+            "concepts": ["Salary", "Credit Cards Payments"],
             "balances": {
                 "Cash": 400,
                 "EF": 0.32,
@@ -234,6 +234,24 @@
                 "WS LOC": -3411.07,
                 "Money Mart": -3768.25
             }
+        },
+        {
+            "date": "2026-10-08",
+            "concepts": [],
+            "balances": {
+                "Cash": 740,
+                "EF": 100,
+                "WS Checking": 819.33,
+                "SB Checking": 102.93,
+                "Poker": 100,
+                "TFSA": 10093.68,
+                "SB Credit Card": -3176.15,
+                "WS Credit Card": -2672.84,
+                "WM Credit Card": -907.04,
+                "WS LOC": -3323.50,
+                "Money Mart": -3640.25
+            }
         }
+
     ]
 }

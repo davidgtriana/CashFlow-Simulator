@@ -63,7 +63,7 @@
         {
             "name": "Money Mart",
             "interestRate": 0.3467,
-            "minimum": 164.22,
+            "minimum": 664.22,
             "frequency": "Biweekly",
             "from": "WS Checking",
             "dueDate": "2026-10-01",
