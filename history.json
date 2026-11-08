@@ -251,7 +251,42 @@
                 "WS LOC": -3323.50,
                 "Money Mart": -3640.25
             }
+        },
+        {
+            "date": "2026-11-05",
+            "concepts": [],
+            "balances": {
+                "Cash": 55,
+                "EF": 300,
+                "WS Checking": 68.28,
+                "SB Checking": 97.25,
+                "Poker": 553,
+                "TFSA": 9584.29,
+                "SB Credit Card": -3794.85,
+                "WS Credit Card": -2676.48,
+                "WM Credit Card": 0,
+                "WS LOC": -3235.96,
+                "Money Mart": -2634.38,
+                "Fairstone": -4390
+            }
+        },
+        {
+            "date": "2026-11-07",
+            "concepts": [],
+            "balances": {
+                "Cash": 5,
+                "EF": 0,
+                "WS Checking": 68.28,
+                "SB Checking": 97.25,
+                "Poker": 0,
+                "TFSA": 9584.29,
+                "SB Credit Card": -4294.85,
+                "WS Credit Card": -2676.48,
+                "WM Credit Card": -511.45,
+                "WS LOC": -3235.96,
+                "Money Mart": -2634.38,
+                "Fairstone": -4390
+            }
         }
-
     ]
 }

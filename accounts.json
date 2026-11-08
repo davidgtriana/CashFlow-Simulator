@@ -27,38 +27,42 @@
         {
             "name": "SB Credit Card",
             "interestRate": 0.2299,
-            "minimum": 30,
+            "minimum": 200,
             "frequency": "Monthly",
             "from": "WS Checking",
             "dueDate": "2026-09-19",
-            "type": "CreditCard"
+            "type": "CreditCard",
+            "active": true
         },
         {
             "name": "WM Credit Card",
             "interestRate": 0.2299,
-            "minimum": 20,
+            "minimum": 200,
             "frequency": "Monthly",
             "from": "WS Checking",
             "dueDate": "2026-10-09",
-            "type": "CreditCard"
+            "type": "CreditCard",
+            "active": true
         },
         {
             "name": "WS Credit Card",
             "interestRate": 0.2299,
-            "minimum": 100,
+            "minimum": 200,
             "frequency": "Biweekly",
             "from": "WS Checking",
             "dueDate": "2026-09-29",
-            "type": "CreditCard"
+            "type": "CreditCard",
+            "active": true
         },
         {
             "name": "WS LOC",
             "interestRate": 0.0495,
-            "minimum": 100,
+            "minimum": 200,
             "frequency": "Biweekly",
             "from": "WS Checking",
             "dueDate": "2026-10-01",
-            "type": "LineOfCredit"
+            "type": "LineOfCredit",
+            "active": true
         },
         {
             "name": "Money Mart",
@@ -67,7 +71,18 @@
             "frequency": "Biweekly",
             "from": "WS Checking",
             "dueDate": "2026-10-01",
-            "type": "Loan"
+            "type": "Loan",
+            "active": true
+        },
+        {
+            "name": "Fairstone",
+            "interestRate": 0,
+            "minimum": 182.92,
+            "frequency": "Monthly",
+            "from": "WS Checking",
+            "dueDate": "2026-11-25",
+            "type": "LineOfCredit",
+            "active": true
         }
     ]
 }

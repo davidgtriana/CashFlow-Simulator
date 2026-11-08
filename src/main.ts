@@ -29,6 +29,7 @@ export class Account{
     name: string;
     interestRate: number = 0;
     type: AccountType = AccountType.Checking;
+    active: boolean = true;
     constructor(name: string){
         this.name = name;
     }
@@ -114,6 +115,7 @@ export class User{
             : new Account(accountData.name);
             account.interestRate = accountData.interestRate ?? 0;
             account.type = this.parseAccountType(accountData.type ?? "Checking");
+            account.active = accountData.active ?? true;
             if(account instanceof LiabilityAccount){
                 account.minimum = accountData.minimum ?? 0;
                 account.frequency = this.parseFrequency(accountData.frequency ?? "Monthly");
@@ -132,7 +134,7 @@ export class User{
             let newBalances = new Map<number, number>();
             for (const accountName in entryData.balances) {
                 const accountId = this.getAccountIdByName(accountName);
-                newBalances.set(accountId,entryData.balances[accountName]);
+                newBalances.set(accountId, this.accounts.get(accountId)?.active ? entryData.balances[accountName] : 0);
             }
             this.history.push(new TimeLineEntry(newDate, newConcepts, newBalances));
         }
@@ -296,21 +298,27 @@ class Projection{
     }
 
 
-    applyTransaction(from: string | null, to: string | null, amount: number, balances: Map<number, number>){
+    applyTransaction( from: string | null, to: string | null, amount: number, balances: Map<number, number> ) {
+    // Check if either account is inactive
+    if (from && !this.user.accounts.get(this.user.getAccountIdByName(from))?.active)
+        return;
 
-        if (from) {
-            const id = this.user.getAccountIdByName(from);
-            const balance = balances.get(id)!;
-            balances.set(id,balance - amount);
-        }
+    if (to && !this.user.accounts.get(this.user.getAccountIdByName(to))?.active)
+        return;
 
-        if (to) {
-            const id = this.user.getAccountIdByName(to);
-            const balance = balances.get(id)!;
-            balances.set(id,balance + amount);
-        }
-
+    // Apply transaction
+    if (from) {
+        const id = this.user.getAccountIdByName(from);
+        const balance = balances.get(id) ?? 0;
+        balances.set(id, balance - amount);
     }
+
+    if (to) {
+        const id = this.user.getAccountIdByName(to);
+        const balance = balances.get(id) ?? 0;
+        balances.set(id, balance + amount);
+    }
+}
 
     shouldApplyOneTimeTransaction(transaction: OneTimeTransaction, currentDate: Date): boolean {
         if (!transaction.active) return false;
