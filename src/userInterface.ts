@@ -1,11 +1,41 @@
 import { User } from "./main.js";
 import { Account } from "./main.js";
 import { TimeLineEntry } from "./main.js";
+import { AccountType } from "./main.js";
 
 declare const Chart: any;
 
 export class UserInterface {
     charts = new ChartRenderer();
+
+    renderAccountsTable(user: User){
+        const container = document.getElementById("accounts-list")!;
+        container.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-account">Account</th>
+                        <th class="col-type">Type</th>
+                        <th class="col-interest">Interest Rate</th>
+                        <th class="col-balance">Balance</th>
+                    </tr>
+                </thead>
+                <tbody id="accounts-table-body"></tbody>
+            </table>
+        `;
+        const tableBody = document.getElementById("accounts-table-body")!;
+        let html = ``;
+        console.log(AccountType);
+        for (const account of user.accounts.values())
+            html += `
+                <tr>
+                    <td>${account.name}</td>
+                    <td>${AccountType[account.type]}</td>
+                    <td>${(account.interestRate * 100).toFixed(2)}%</td>
+                    <td>${this.formatCurrency(account.active ? user.history[user.history.length - 1].balances.get(account.id) ?? 0 : 0)}</td>
+                </tr>`;
+        tableBody.innerHTML = html;
+    }
 
     renderTimeLineTable(user: User, future: TimeLineEntry[]){
         const container = document.getElementById("timeline-table")!;

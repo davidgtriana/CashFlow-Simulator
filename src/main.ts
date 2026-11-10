@@ -14,7 +14,7 @@ let currency = "CAD";
  *  - Export as an Excel file
  *  */ 
 
-enum AccountType {
+export enum AccountType {
     Cash,
     Checking,
     Savings,
@@ -377,10 +377,11 @@ async function main(){
     await user.loadTransactions();
     
     let projection = new Projection(user);
-    projection.create((365/12)*12);
+    projection.create((365/12)*6);
 
     let ui = new UserInterface();
     ui.charts.renderNetWorthChart(user.history,projection.future);
+    ui.renderAccountsTable(user);
 
     ui.renderTimeLineTable(user, projection.future);
 

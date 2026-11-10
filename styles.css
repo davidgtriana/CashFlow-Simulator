@@ -1,6 +1,16 @@
 body{
     background-color: white;
 }
+
+#dashboard {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+    margin: 20px;
+    padding: 20px;
+}
+
 .chart-container {
     position: relative;
     width: 100%;
@@ -8,6 +18,45 @@ body{
     height: 400px;
     margin: 20px auto;
 }
+
+#dashboard-sidebar {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 20px;
+    min-height: 0;
+}
+
+.dashboard-panel {
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 12px;
+    padding: 20px;
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    #dashboard {
+        grid-template-columns: 1fr;
+        margin:0;
+    }
+
+    #dashboard-sidebar {
+        grid-template-rows: auto auto;
+    }
+
+    .chart-container {
+        height: 300px;
+    }
+}
+
+
+#accounts-list,
+#transactions-list {
+    overflow-y: auto;
+    min-height: 0;
+}
+
 
 table {
     border-collapse: collapse;
@@ -30,15 +79,14 @@ tr.section-row td {
     text-align: center;
     text-transform: uppercase;
     font-weight: 700;
-
     background-color: #b8b8b8;
-
     letter-spacing: 1px;
+
 }
 
 thead th {
     font-family: Arial, sans-serif;
-    color: white;
+    color: rgb(255, 255, 255);
     position: sticky;
     top: 0;
     background: #4f4f4f;
@@ -48,8 +96,7 @@ thead th {
 }
 
 td:first-child,
-td:nth-child(2),
-td:nth-child(3) {
+td:nth-child(2){
     text-align: left;
 }
 

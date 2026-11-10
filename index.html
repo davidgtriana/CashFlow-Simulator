@@ -7,10 +7,24 @@
     <title>Document</title>
 </head>
 <body>
-    <section id="net-worth-section">
-        <h2>Net Worth</h2>
-        <div class="chart-container">
-            <canvas id="net-worth-chart"></canvas>
+    <section id="dashboard">
+        <div id="net-worth-section" class="dashboard-panel">
+            <h2>Net Worth Projection</h2>
+            <div class="chart-container">
+                <canvas id="net-worth-chart"></canvas>
+            </div>
+        </div>
+
+        <div id="dashboard-sidebar">
+            <div id="accounts-section" class="dashboard-panel">
+                <h2>Accounts</h2>
+                <div id="accounts-list"></div>
+            </div>
+
+            <div id="transactions-section" class="dashboard-panel">
+                <h2>Transactions</h2>
+                <div id="transactions-list"></div>
+            </div>
         </div>
     </section>
 
